@@ -1,28 +1,27 @@
 import mongoose from 'mongoose'
+import { hash } from "bcryptjs"
+
 const userSchema = new mongoose.Schema({
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    username: {
-        type: String,
-        required: true
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: String,
-        required: true
+    email: String,
+    username: String,
+    name: String,
+    password: String
+}, {
+        timestamps: true
+    })
+
+
+userSchema.pre('save', async function (next) {
+    try {
+        if (this.isModified('password')) {
+            this.password = await hash(this.password, 10)
+        }
+        next()
+    } catch (error) {
+        next(error);
     }
+
 })
-
-
-// User.insertMany([
-//     { email:  }
-// ])
 
 
 export default mongoose.model('User', userSchema) 
