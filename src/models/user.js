@@ -1,7 +1,5 @@
 import mongoose from 'mongoose'
 import { hash } from "bcryptjs"
-import user from '../typeDefs/user';
-
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -37,6 +35,10 @@ const userSchema = new mongoose.Schema({
 
 userSchema.statics.dontExist = async function (option) {
     return await this.where(option).countDocuments() === 0
+}
+
+userSchema.methods.matchesPassword = function (password) {
+    return hash.compare(password, this.password)
 }
 
 userSchema.pre('save', async function (next) {
